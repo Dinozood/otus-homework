@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - feature/github_actions
+  workflow_dispatch:
 
 jobs:
   build:
