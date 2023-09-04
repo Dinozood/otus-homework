@@ -1,1 +1,2 @@
-# Шаблон настройки GitHub Actions
+# otus-homework
+just a repo for homework

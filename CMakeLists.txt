@@ -8,7 +8,7 @@ project(helloworld VERSION ${PROJECT_VESRION})
 find_package(Boost COMPONENTS unit_test_framework REQUIRED)
 
 configure_file(version.h.in version.h)
-
+include_directories()
 add_executable(helloworld_cli main.cpp)
 add_library(helloworld lib.cpp)
 add_executable(test_version test_version.cpp)
@@ -57,7 +57,7 @@ endif()
 
 
 
-install(TARGETS helloworld_cli RUNTIME DESTINATION bin)
+install(TARGETS helloworld_cli RUNTIME DESTINATION ${CMAKE_SOURCE_DIR}/bin)
 
 set(CPACK_GENERATOR DEB)
 
@@ -72,3 +72,4 @@ include(CPack)
 enable_testing()
 
 add_test(test_version test_version)
+#message(${CMAKE_CXX_STANDARD}) или message(${CMAKE_CXX_STANDARD_DEFAULT}) # Как чекнуть версию С++
