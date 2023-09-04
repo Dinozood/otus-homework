@@ -56,8 +56,8 @@ else ()
 endif()
 
 
-
-install(TARGETS helloworld_cli RUNTIME DESTINATION ${CMAKE_SOURCE_DIR}/bin)
+#Тут стоило бы подробнее описать что за путь bin, то есть, что сюда упадёт прога при установке...
+install(TARGETS helloworld_cli RUNTIME DESTINATION /bin)
 
 set(CPACK_GENERATOR DEB)
 
@@ -73,3 +73,4 @@ enable_testing()
 
 add_test(test_version test_version)
 #message(${CMAKE_CXX_STANDARD}) или message(${CMAKE_CXX_STANDARD_DEFAULT}) # Как чекнуть версию С++
+
