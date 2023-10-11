@@ -1,59 +1,77 @@
 cmake_minimum_required(VERSION 3.10)
 
-set(PATCH_VERSION "1" CACHE INTERNAL "Patch version")
-set(PROJECT_VESRION 0.0.${PATCH_VERSION})
+#set(PATCH_VERSION "1" CACHE INTERNAL "Patch version")
+#set(PROJECT_VESRION 0.0.${PATCH_VERSION})
 
-project(helloworld VERSION ${PROJECT_VESRION})
+set(HOMEWORK_NAME "homework_2")
+
+set(MAJOR_VERSION "1" CACHE INTERNAL "Major version")
+set(MINOR_VERSION "0" CACHE INTERNAL "Minor version")
+set(PATCH_VERSION "0" CACHE INTERNAL "Patch version")
+set(PROJECT_VESRION ${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION})
+
+project(${HOMEWORK_NAME} VERSION ${PROJECT_VESRION})
 
 find_package(GTest REQUIRED)
 
-configure_file(version.h.in version.h)
-add_executable(helloworld_cli main.cpp)
-add_library(helloworld lib.cpp)
-add_executable(test_version test_version.cpp)
+set(APP_SOURCES
+    main.cpp
+)
 
-set_target_properties(helloworld_cli helloworld test_version PROPERTIES
+set(LIB_SOURCES
+    lib.cpp
+)
+
+set(TEST_SOURCES
+        test_cases.cpp
+)
+
+add_executable(${HOMEWORK_NAME}_app ${APP_SOURCES})
+add_library(${HOMEWORK_NAME}_lib ${LIB_SOURCES})
+add_executable(${HOMEWORK_NAME}_test ${TEST_SOURCES})
+
+set_target_properties(${HOMEWORK_NAME}_app ${HOMEWORK_NAME}_lib ${HOMEWORK_NAME}_test PROPERTIES
     CXX_STANDARD 14
     CXX_STANDARD_REQUIRED ON
 )
 
-target_include_directories(helloworld
+target_include_directories(${HOMEWORK_NAME}_lib
     PRIVATE "${CMAKE_BINARY_DIR}"
 )
 
-target_link_libraries(helloworld_cli PRIVATE
-    helloworld
+target_link_libraries(${HOMEWORK_NAME}_app PRIVATE
+    ${HOMEWORK_NAME}_lib
 )
-target_link_libraries(test_version
+target_link_libraries(${HOMEWORK_NAME}_test
     GTest::gtest_main
-    helloworld
+    ${HOMEWORK_NAME}_lib
 )
 
 if (MSVC)
-    target_compile_options(helloworld_cli PRIVATE
+    target_compile_options(${HOMEWORK_NAME}_app PRIVATE
         /W4
     )
-    target_compile_options(helloworld PRIVATE
+    target_compile_options(${HOMEWORK_NAME}_lib PRIVATE
         /W4
     )
-    target_compile_options(test_version PRIVATE
+    target_compile_options(${HOMEWORK_NAME}_test PRIVATE
         /W4
     )
 else ()
-    target_compile_options(helloworld_cli PRIVATE
+    target_compile_options(${HOMEWORK_NAME}_app PRIVATE
         -Wall -Wextra -pedantic -Werror
     )
-    target_compile_options(helloworld PRIVATE
+    target_compile_options(${HOMEWORK_NAME}_lib PRIVATE
         -Wall -Wextra -pedantic -Werror
     )
-    target_compile_options(test_version PRIVATE
+    target_compile_options(${HOMEWORK_NAME}_test PRIVATE
         -Wall -Wextra -pedantic -Werror
     )
 endif()
 
 
 #Тут стоило бы подробнее описать что за путь bin, то есть, что сюда упадёт прога при установке...
-install(TARGETS helloworld_cli RUNTIME DESTINATION /bin)
+install(TARGETS ${HOMEWORK_NAME}_app RUNTIME DESTINATION /bin)
 
 set(CPACK_GENERATOR DEB)
 
@@ -67,6 +85,6 @@ include(CPack)
 
 enable_testing()
 
-add_test(test_version test_version)
+add_test(${HOMEWORK_NAME}_test ${HOMEWORK_NAME}_test )
 #message(${CMAKE_CXX_STANDARD}) или message(${CMAKE_CXX_STANDARD_DEFAULT}) # Как чекнуть версию С++
 
