@@ -19,7 +19,8 @@ set(APP_SOURCES
 )
 
 set(LIB_SOURCES
-    lib.cpp
+        ip_filter.h
+        ip_filter.cpp
 )
 
 set(TEST_SOURCES
