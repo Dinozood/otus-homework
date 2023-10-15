@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - feature/github_actions
+      - homework#2
   workflow_dispatch:
 
 jobs:
