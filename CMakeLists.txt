@@ -90,3 +90,4 @@ include(CPack)
 enable_testing()
 
 add_test(${HOMEWORK_NAME}_test ${HOMEWORK_NAME}_test )
+#did it work?
