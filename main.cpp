@@ -5,6 +5,14 @@
 
 #include <algorithm>
 
+template<class Filter>
+void filter_print(const std::vector<ip_addr> &pool, Filter filter) {
+    for (auto ip: pool) {
+        if (filter(ip))
+            ip.print();
+    }
+};
+
 int main() {
     try {
         std::vector<ip_addr> ip_pool;
@@ -14,34 +22,27 @@ int main() {
             ip_pool.push_back(ip_addr(split(v.at(0), '.')));
         }
 
-        std::qsort(ip_pool.data(), ip_pool.size(), sizeof(ip_addr), ip_comp);
+        std::sort(ip_pool.begin(), ip_pool.end(), [](ip_addr &L, ip_addr &R) -> bool {
+            return (L._byte >= R._byte);
+        });
 
-
-        for (auto ip: ip_pool) {
-            ip.print();
-        }
-
-        for (auto ip: ip_pool) {
-            if (ip._byte[0] == 1)
-                ip.print();
-        }
-
-        for (auto ip: ip_pool) {
-            if (ip._byte[0] == 46 && ip._byte[1] == 70)
-                ip.print();
-        }
-
-        for (auto ip: ip_pool) {
-            bool is_46 = false;
-            for(auto byte : ip._byte) {
-                if (byte == 46) {
-                    is_46 = true;
-                    break;
+        std::vector<std::function<bool(ip_addr ip)>> filters{
+                [](const ip_addr ip) {
+                    (void) ip;
+                    return true;
+                },
+                [](const ip_addr ip) { return (ip._byte[0] == 1); },
+                [](const ip_addr ip) { return (ip._byte[0] == 46 && ip._byte[1] == 70); },
+                [](const ip_addr ip) {
+                    return std::any_of(ip._byte.begin(), ip._byte.end(), [](uint8_t byte) -> bool {
+                        return (byte == 46);
+                    });
                 }
-            }
-            if (is_46)
-                ip.print();
-        }
+
+        };
+
+        for (auto filter: filters)
+            filter_print(ip_pool, filter);
 
     }
     catch (const std::exception &e) {

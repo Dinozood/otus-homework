@@ -7,19 +7,21 @@
 
 #include <vector>
 #include <string>
+#include <array>
+
 
 std::vector<std::string> split(const std::string &str, char d);
+
 
 typedef struct ip_addr {
     ip_addr();
 
     explicit ip_addr(std::vector<std::string> addr_line);
+
     void print() const;
-    uint8_t _byte[4];
+
+    std::array<uint8_t, 4> _byte;
 } ip_addr_ts;
-
-int ip_comp(const void* L_v, const void* R_v);
-
 
 
 #endif //HOMEWORK_2_IP_FILTER_H

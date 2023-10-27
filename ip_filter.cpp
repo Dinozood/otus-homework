@@ -25,19 +25,6 @@ std::vector<std::string> split(const std::string &str, char d) {
     return r;
 }
 
-int ip_comp(const void *L_v, const void *R_v) {
-    ip_addr L = *static_cast<const ip_addr *>(L_v);
-    ip_addr R = *static_cast<const ip_addr *>(R_v);
-    for (size_t i = 0; i < sizeof(L._byte); ++i) {
-        if (L._byte[i] != R._byte[i]) {
-            if (L._byte[i] < R._byte[i])
-                return 1;
-            else
-                return -1;
-        }
-    }
-    return 0;
-};
 
 ip_addr::ip_addr(std::vector<std::string> addr_line) {
     if (addr_line.size() != sizeof(_byte))
@@ -52,6 +39,7 @@ ip_addr::ip_addr(std::vector<std::string> addr_line) {
     }
 }
 
+
 void ip_addr::print() const {
     for (size_t i = 0; i < sizeof(_byte); ++i) {
         if (i != 0)
@@ -61,6 +49,8 @@ void ip_addr::print() const {
     std::cout << std::endl;
 }
 
+
 ip_addr::ip_addr() {
 
 }
+
