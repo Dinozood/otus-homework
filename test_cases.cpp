@@ -1,41 +1,71 @@
-#include "ip_filter.h"
 #include <gtest/gtest.h>
+#include "custom_allocator.h"
+#include "Container.h"
 
 #define UPPER_LIMIT (256)
+#define DEFAULT_ALLOC_SIZE (10)
 
-void test_all_good() {
-    /*
-     * testing 2^64 variants is too much as for me
-     * */
+static uint16_t fact(uint16_t n) {
+    long long factorial = 1;
+    for (int i = 1; i <= n; ++i) {
+        factorial *= i;
+    }
+    return factorial;
+}
 
-    std::srand(std::time(nullptr));
-    for (int i = 0; i < 10000; ++i) {
-        std::vector<std::string> tmp = {
-                std::to_string(std::rand() % UPPER_LIMIT),
-                std::to_string(std::rand() % UPPER_LIMIT),
-                std::to_string(std::rand() % UPPER_LIMIT),
-                std::to_string(std::rand() % UPPER_LIMIT),
-        };
-        ip_addr exmpl(tmp);
+template<typename Map>
+static void print_it(const Map &map) {
+    for (auto pair: map) {
+        std::cout << (int) pair.first << " " << (int) pair.second << std::endl;
+    }
+    std::cout << std::endl;
+}
+
+template<typename Map>
+static void fill_map(Map &map) {
+    for (int i = 0; i < DEFAULT_ALLOC_SIZE; ++i) {
+        map[i] = fact(i);
     }
 }
 
-
-TEST(IpValidation, dontCatchExpressionsInFor) {
-    EXPECT_NO_THROW(test_all_good());
+template<typename fw_lst>
+static void fill_list(fw_lst &list) {
+    for (int i = 0; i < DEFAULT_ALLOC_SIZE; ++i) {
+        list.add(fact(i));
+    }
 }
 
-TEST(IpValidation, catchIt) {
-    for (int i = 0; i < 1000; ++i) {
-        std::srand(std::time(nullptr));
-        std::vector<std::string> ipAddr = {
-                std::to_string(std::rand() % UPPER_LIMIT),
-                std::to_string(std::rand() % UPPER_LIMIT),
-                std::to_string(std::rand() % UPPER_LIMIT),
-                std::to_string(std::rand() % UPPER_LIMIT),
-        };
-        ipAddr[std::rand() % 4] = std::to_string((std::rand() % UPPER_LIMIT) + UPPER_LIMIT);
-        EXPECT_ANY_THROW([[maybe_unused]] ip_addr tmp1 = ip_addr(ipAddr));
+template<typename Map>
+static void fill_over_map(Map &map) {
+    for (int i = 0; i < DEFAULT_ALLOC_SIZE + 1; ++i) {
+        map[i] = fact(i);
+    }
+}
+
+template<typename fw_lst>
+static void fill_over_list(fw_lst &list) {
+    for (int i = 0; i < DEFAULT_ALLOC_SIZE + 1; ++i) {
+        list.add(fact(i));
+    }
+}
+
+TEST(Allocator, ConstructionGood) {
+    std::map<int, int, std::less<>, base_allocator<int, DEFAULT_ALLOC_SIZE>> map_with_custom;
+    EXPECT_NO_THROW(fill_map(map_with_custom));
+}
+
+TEST(Allocator, ConstructionBad) {
+    std::map<int, int, std::less<>, base_allocator<int, DEFAULT_ALLOC_SIZE>> map_with_custom;
+    EXPECT_ANY_THROW(fill_over_map(map_with_custom));
+}
+
+TEST(CustomContainer, Filler) {
+    forward_list<int> fwd_lst;
+    fill_list(fwd_lst);
+    forward_list<int>::Iterator iter(&fwd_lst);
+    for (size_t i = 0; i < DEFAULT_ALLOC_SIZE; ++i) {
+        EXPECT_EQ(iter->data, fact(i));
+        ++iter;
     }
 }
 

@@ -1,48 +1,63 @@
 #include <iostream>
-#include "ip_filter.h"
 #include <cassert>
 #include <cstdlib>
 
 #include <algorithm>
+#include <map>
 
-template<class Filter>
-void filter_print(const std::vector<ip_addr> &pool, Filter filter) {
-    for (auto ip: pool) {
-        if (filter(ip))
-            ip.print();
+#include "custom_allocator.h"
+#include "Container.h"
+
+static uint16_t fact(uint16_t n) {
+    long long factorial = 1;
+    for (int i = 1; i <= n; ++i) {
+        factorial *= i;
     }
-};
+    return factorial;
+}
+
+template<typename Map>
+static void print_it(const Map &map) {
+    for (auto pair: map) {
+        std::cout << (int) pair.first << " " << (int) pair.second << std::endl;
+    }
+    std::cout << std::endl;
+}
+
+template<typename Map>
+static void fill_map(Map& map) {
+    for (int i = 0; i < 10; ++i) {
+        map[i] = fact(i);
+    }
+}
+
+template<typename fw_lst>
+static void fill_list(fw_lst& list) {
+    for (int i = 0; i < 10; ++i) {
+        list.add(fact(i));
+    }
+}
+
+
+
 
 int main() {
     try {
-        std::vector<ip_addr> ip_pool;
+        std::map<int, int> int_map;
+        fill_map(int_map);
+        print_it(int_map);
 
-        for (std::string line; std::getline(std::cin, line);) {
-            std::vector<std::string> v = split(line, '\t');
-            ip_pool.push_back(ip_addr(split(v.at(0), '.')));
-        }
+        std::map<int, int, std::less<int>, base_allocator<int>> int_map_alloc;
+        fill_map(int_map_alloc);
+        print_it(int_map_alloc);
 
-        std::sort(ip_pool.begin(), ip_pool.end(), [](ip_addr &L, ip_addr &R) -> bool {
-            return (L._byte >= R._byte);
-        });
+        forward_list<int> int_list;
+        fill_list(int_list);
+        std::cout << int_list << std::endl << std::endl;
 
-        std::vector<std::function<bool(ip_addr ip)>> filters{
-                [](const ip_addr ip) {
-                    (void) ip;
-                    return true;
-                },
-                [](const ip_addr ip) { return (ip._byte[0] == 1); },
-                [](const ip_addr ip) { return (ip._byte[0] == 46 && ip._byte[1] == 70); },
-                [](const ip_addr ip) {
-                    return std::any_of(ip._byte.begin(), ip._byte.end(), [](uint8_t byte) -> bool {
-                        return (byte == 46);
-                    });
-                }
-
-        };
-
-        for (auto filter: filters)
-            filter_print(ip_pool, filter);
+        forward_list<int, base_allocator<int>> int_list_alloc;
+        fill_list(int_list_alloc);
+        std::cout << int_list_alloc << std::endl;
 
     }
     catch (const std::exception &e) {

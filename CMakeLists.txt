@@ -3,9 +3,9 @@ cmake_minimum_required(VERSION 3.10)
 #set(PATCH_VERSION "1" CACHE INTERNAL "Patch version")
 #set(PROJECT_VESRION 0.0.${PATCH_VERSION})
 
-set(HOMEWORK_NAME "homework_2")
-set(HOMEWORK_NAME_APP "ip_filter")
-set(PACKAGE_NAME "ip_filter")
+set(HOMEWORK_NAME "homework_3")
+set(HOMEWORK_NAME_APP "dummy_allocator")
+set(PACKAGE_NAME "dummy_allocator")
 
 
 set(MAJOR_VERSION "0" CACHE INTERNAL "Major version")
@@ -22,8 +22,11 @@ set(APP_SOURCES
 )
 
 set(LIB_SOURCES
-        ip_filter.h
-        ip_filter.cpp
+    custom_allocator.h
+    custom_allocator.cpp
+        Container.cpp
+        Container.h
+
 )
 
 set(TEST_SOURCES
